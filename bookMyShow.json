@@ -1,0 +1,64 @@
+-- User Table
+CREATE TABLE Users (
+    UserID INT AUTO_INCREMENT PRIMARY KEY,
+    UserEmail VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(10) NOT NULL UNIQUE,
+    UserName VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Movie Table
+CREATE TABLE Movies (
+    MovieID INT AUTO_INCREMENT PRIMARY KEY,
+    MovieName VARCHAR(255) NOT NULL
+);
+
+-- Theatre Table
+CREATE TABLE Theatres (
+    TheatreID INT AUTO_INCREMENT PRIMARY KEY,
+    TheatreName VARCHAR(255) NOT NULL
+);
+
+-- Show Table
+CREATE TABLE Shows (
+    ShowID INT AUTO_INCREMENT PRIMARY KEY,
+    TheatreID INT,
+    MovieID INT,
+    ShowDate DATE,
+    ShowTime TIME,
+    FOREIGN KEY (TheatreID) REFERENCES Theatre(TheatreID),
+    FOREIGN KEY (MovieID) REFERENCES Movie(MovieID)
+);
+
+-- Booking Table
+CREATE TABLE Booking (
+    BookingID INT PRIMARY KEY,
+    UserID INT,
+    ShowID INT,
+    BookingDate DATE,
+    FOREIGN KEY (UserID) REFERENCES User(UserID),
+    FOREIGN KEY (ShowID) REFERENCES Show(ShowID)
+);
+
+
+//Query to list down all the shows on a given date at a given theatre along with their respective show timings
+
+DECLARE @given_date DATE = '2024-01-10';
+DECLARE @given_theatre_name VARCHAR(255) = 'PVR Gold Vega City';
+
+SELECT 
+    Shows.ShowID,
+    Movies.MovieName,
+    Shows.ShowDate,
+    Shows.ShowTime
+FROM 
+    Shows
+JOIN 
+    Theatres ON Shows.TheatreID = Theatres.TheatreID
+JOIN 
+    Movies ON Shows.MovieID = Movies.MovieID
+WHERE 
+    Theatres.TheatreName = @given_theatre_name
+    AND Shows.ShowDate = @given_date;
